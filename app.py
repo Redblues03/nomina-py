@@ -89,10 +89,12 @@ def api_turnos_calcular():
         })
 
     sin_descanso = bool(data.get("sin_descanso_compensatorio", False))
+    forzar_tarifa_julio = bool(data.get("forzar_tarifa_julio", False))
 
     resultado = turnos.calcular_mes(
         salario, turnos_validos, jornada_ordinaria=jornada,
         sin_descanso_compensatorio=sin_descanso,
+        forzar_tarifa_julio=forzar_tarifa_julio,
     )
     return jsonify(resultado)
 

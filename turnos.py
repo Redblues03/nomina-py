@@ -212,7 +212,8 @@ def _clasificar_turno(fecha_str, inicio_str, fin_str, almuerzo_min, jornada_ordi
     return piezas
 
 
-def calcular_mes(salario, turnos, jornada_ordinaria=8.0, sin_descanso_compensatorio=False):
+def calcular_mes(salario, turnos, jornada_ordinaria=8.0, sin_descanso_compensatorio=False,
+                  forzar_tarifa_julio=False):
     """
     Calcula los recargos y horas extra de un conjunto de turnos en un mes.
 
@@ -221,7 +222,13 @@ def calcular_mes(salario, turnos, jornada_ordinaria=8.0, sin_descanso_compensato
     sin_descanso_compensatorio: si es True, las horas ordinarias trabajadas en
         domingo/festivo se pagan como día completo (100% de la hora + el
         recargo) en vez de solo el recargo — ver Art. 180 CST.
+    forzar_tarifa_julio: si es True, usa la tarifa dominical/festiva vigente
+        desde el 1-jul-2026 (90%) para todas las fechas del mes, sin importar
+        la fecha real de cada turno. Sirve para simular "¿cómo se vería este
+        mes con los recargos nuevos?". No afecta el divisor mensual de la
+        hora (220/210), que sigue la fecha real.
     """
+    tarifa_julio_2026 = tarifa_dominical(date(2026, 7, 1))
     categorias = {
         "recargo_nocturno": {"horas": 0.0, "valor": 0.0},
         "recargo_dominical": {"horas": 0.0, "valor": 0.0},
@@ -256,7 +263,7 @@ def calcular_mes(salario, turnos, jornada_ordinaria=8.0, sin_descanso_compensato
                         categorias["recargo_nocturno"]["valor"] += h * vh * R_NOCTURNO
                     # diurna ordinaria sin recargo: ya pagada por el salario
                 else:
-                    td = tarifa_dominical(p["fecha"])
+                    td = tarifa_julio_2026 if forzar_tarifa_julio else tarifa_dominical(p["fecha"])
                     base = 1.0 if sin_descanso_compensatorio else 0.0
                     if p["nocturna"]:
                         categorias["recargo_nocturno_dominical"]["horas"] += h
@@ -275,7 +282,7 @@ def calcular_mes(salario, turnos, jornada_ordinaria=8.0, sin_descanso_compensato
                         categorias["extra_diurna"]["horas"] += h
                         categorias["extra_diurna"]["valor"] += h * vh * (1 + R_EXTRA_DIURNA)
                 else:
-                    td = tarifa_dominical(p["fecha"])
+                    td = tarifa_julio_2026 if forzar_tarifa_julio else tarifa_dominical(p["fecha"])
                     if p["nocturna"]:
                         categorias["extra_nocturna_dominical"]["horas"] += h
                         categorias["extra_nocturna_dominical"]["valor"] += h * vh * (1 + R_EXTRA_NOCTURNA + td)
