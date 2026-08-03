@@ -9,17 +9,40 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" />
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    /* Aplica el tema guardado (o el del sistema) antes de pintar, para
+       evitar el parpadeo de un tema equivocado al cargar la página. */
+    (function () {
+      var guardado = localStorage.getItem("mi-nomina:tema");
+      var tema = guardado || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.dataset.theme = tema;
+    })();
+  </script>
 </head>
 <body>
   <div class="wrap">
     <header class="masthead">
-      <div class="brand">
-        <span class="brand-mark">$</span>
-        <div>
-          <h1>Mi Nómina</h1>
-          <p class="brand-sub">Salario neto · Colombia <span class="year">2026</span></p>
+      <div class="masthead-top">
+        <div class="brand">
+          <span class="brand-mark">$</span>
+          <div>
+            <h1>Mi Nómina</h1>
+            <p class="brand-sub">Salario neto · Colombia <span class="year">2026</span></p>
+          </div>
         </div>
+        <button type="button" id="btnTema" class="tema-switch" aria-label="Cambiar entre modo claro y oscuro" aria-pressed="false">
+          <svg class="tema-icono tema-icono--sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <svg class="tema-icono tema-icono--luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+          </svg>
+        </button>
       </div>
       <p class="tagline">Escribe tu salario mensual y mira exactamente cuánto te queda en el bolsillo.</p>
     </header>
