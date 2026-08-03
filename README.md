@@ -11,6 +11,7 @@ Calculadora de salario neto para Colombia con los valores oficiales de 2026. El 
 - **Neto a pagar:** lo que realmente recibes.
 - **Costo para el empleador (opcional):** aportes patronales y prestaciones sociales.
 - **Turnos rotativos:** un calendario mensual donde marcas qué días trabajaste y en qué horario. La app identifica automáticamente domingos y festivos, y calcula recargo nocturno, recargo dominical/festivo y horas extra con las tarifas exactas vigentes en cada fecha de 2026.
+- **Desprendible descargable:** el botón "Descargar PDF" genera el desprendible como un PDF real (texto seleccionable, no una imagen) armado en el servidor. También puedes descargarlo como imagen PNG.
 
 Valores oficiales usados (Colombia 2026):
 
@@ -43,6 +44,7 @@ Valores oficiales usados (Colombia 2026):
 
 - `nomina.py` → toda la lógica de cálculo en Python (funciones puras, fáciles de probar).
 - `app.py` → servidor web con Flask. Sirve la página y expone la API `POST /api/calcular`.
+- `pdf_nomina.py` → arma el desprendible en PDF (con [ReportLab](https://www.reportlab.com/)) a partir del resultado del cálculo. Se descarga vía `POST /api/nomina/pdf`.
 - `static/` → la interfaz (HTML, CSS y un poco de JavaScript que solo pide el cálculo al backend y lo muestra).
 - `test_nomina.py` → pruebas del cálculo.
 
