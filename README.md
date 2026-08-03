@@ -217,3 +217,6 @@ FESTIVOS = {
 ```
 
 Luego reconstruye: `docker compose up -d --build`.
+
+## Notas de despliegue
+   App versionada con Git y desplegada al server vía GitHub.
