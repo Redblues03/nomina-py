@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Nómina · Colombia 2026</title>
+  <meta name="description" content="Calcula tu salario neto en Colombia con los valores oficiales de 2026." />
+  <meta name="theme-color" content="#16323d" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <div class="brand">
+        <span class="brand-mark">$</span>
+        <div>
+          <h1>Mi Nómina</h1>
+          <p class="brand-sub">Salario neto · Colombia <span class="year">2026</span></p>
+        </div>
+      </div>
+      <p class="tagline">Escribe tu salario mensual y mira exactamente cuánto te queda en el bolsillo.</p>
+    </header>
+
+    <main class="grid">
+      <!-- ENTRADA -->
+      <section class="panel inputs" aria-label="Datos de tu salario">
+        <label class="field">
+          <span class="field-label">Salario mensual</span>
+          <div class="money-input">
+            <span class="prefix">$</span>
+            <input
+              id="salario"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="0"
+              aria-label="Salario mensual en pesos" />
+          </div>
+          <span class="field-hint" id="salarioHint">Salario básico, sin auxilio de transporte.</span>
+        </label>
+
+        <label class="toggle" for="auxilio">
+          <input type="checkbox" id="auxilio" checked />
+          <span class="toggle-track"><span class="toggle-dot"></span></span>
+          <span class="toggle-text">
+            Recibo auxilio de transporte
+            <small id="auxilioNota">Aplica hasta 2 salarios mínimos.</small>
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Pago extra este mes (opcional)</span>
+          <div class="money-input">
+            <span class="prefix">$</span>
+            <input
+              id="pagoExtra"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="0"
+              aria-label="Pago extra no salarial" />
+          </div>
+          <span class="field-hint">Ej. compensación de seguro. No constitutivo de salario: se suma a tu neto, pero no se le descuenta salud ni pensión.</span>
+        </label>
+
+        <details class="advanced">
+          <summary>Opciones avanzadas</summary>
+          <div class="advanced-body">
+            <label class="toggle" for="retencion">
+              <input type="checkbox" id="retencion" />
+              <span class="toggle-track"><span class="toggle-dot"></span></span>
+              <span class="toggle-text">
+                Estimar retención en la fuente
+                <small>Solo aplica sobre bases altas. Es un estimado.</small>
+              </span>
+            </label>
+
+            <label class="toggle" for="empleador">
+              <input type="checkbox" id="empleador" />
+              <span class="toggle-track"><span class="toggle-dot"></span></span>
+              <span class="toggle-text">
+                Mostrar costo total para el empleador
+                <small>Aportes patronales y prestaciones sociales.</small>
+              </span>
+            </label>
+
+            <label class="field field-inline" id="arlField" hidden>
+              <span class="field-label">Nivel de riesgo ARL</span>
+              <select id="arl">
+                <option value="0.00522">I · Riesgo mínimo (0.522%)</option>
+                <option value="0.01044">II · Riesgo bajo (1.044%)</option>
+                <option value="0.02436">III · Riesgo medio (2.436%)</option>
+                <option value="0.0435">IV · Riesgo alto (4.350%)</option>
+                <option value="0.0696">V · Riesgo máximo (6.960%)</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
+        <dl class="refs">
+          <div><dt>Salario mínimo 2026</dt><dd>$1.750.905</dd></div>
+          <div><dt>Auxilio de transporte</dt><dd>$249.095</dd></div>
+          <div><dt>UVT 2026</dt><dd>$52.374</dd></div>
+        </dl>
+      </section>
+
+      <!-- DESPRENDIBLE -->
+      <section class="panel payslip" aria-label="Desprendible de pago" id="payslip">
+        <div class="perf"></div>
+        <h2 class="payslip-title">Desprendible de pago</h2>
+
+        <div class="block">
+          <p class="block-head block-head--in">Devengado</p>
+          <div class="row"><span>Salario básico</span><span class="amt" id="rSalario">—</span></div>
+          <div class="row" id="rowRecargos" hidden><span>Recargos y horas extra <a href="#turnosPanel" class="row-link">(ver turnos)</a></span><span class="amt" id="rRecargos">—</span></div>
+          <div class="row" id="rowAux"><span>Auxilio de transporte</span><span class="amt" id="rAux">—</span></div>
+          <div class="row" id="rowExtra" hidden><span>Otros ingresos <em>(no salarial)</em></span><span class="amt" id="rExtra">—</span></div>
+          <div class="row row-total"><span>Total devengado</span><span class="amt" id="rDevengado">—</span></div>
+        </div>
+
+        <div class="block">
+          <p class="block-head block-head--out">Deducciones</p>
+          <div class="row"><span>Salud (4%)</span><span class="amt neg" id="rSalud">—</span></div>
+          <div class="row"><span>Pensión <em>(aportes IVM, 4%)</em></span><span class="amt neg" id="rPension">—</span></div>
+          <div class="row" id="rowFsp" hidden><span>Fondo de solidaridad <em id="fspPct"></em></span><span class="amt neg" id="rFsp">—</span></div>
+          <div class="row" id="rowRete" hidden><span>Retención en la fuente</span><span class="amt neg" id="rRete">—</span></div>
+          <div class="row row-total"><span>Total deducciones</span><span class="amt neg" id="rDeducciones">—</span></div>
+        </div>
+
+        <div class="net">
+          <span class="net-label">Neto a pagar</span>
+          <span class="net-amount" id="rNeto">$0</span>
+        </div>
+
+        <div class="bar" aria-hidden="true">
+          <div class="bar-net" id="barNet" style="width:100%"></div>
+          <div class="bar-ded" id="barDed" style="width:0%"></div>
+        </div>
+        <p class="bar-legend">
+          <span><i class="dot dot-net"></i> Lo que recibes <b id="pctNet">100%</b></span>
+          <span><i class="dot dot-ded"></i> Deducciones <b id="pctDed">0%</b></span>
+        </p>
+
+        <button type="button" class="btn-secundario btn-descargar" id="btnDescargarImagen">⬇ Descargar imagen</button>
+
+        <!-- COSTO EMPLEADOR -->
+        <div class="block employer" id="employerBlock" hidden>
+          <p class="block-head block-head--emp">Costo para el empleador</p>
+          <div class="row"><span>Salud (8.5%)</span><span class="amt" id="eSalud">—</span></div>
+          <div class="row"><span>Pensión (12%)</span><span class="amt" id="ePension">—</span></div>
+          <div class="row"><span>ARL <em id="eArlPct"></em></span><span class="amt" id="eArl">—</span></div>
+          <div class="row"><span>Caja de compensación (4%)</span><span class="amt" id="eCaja">—</span></div>
+          <div class="row"><span>Cesantías (8.33%)</span><span class="amt" id="eCes">—</span></div>
+          <div class="row"><span>Intereses de cesantías (1%)</span><span class="amt" id="eInt">—</span></div>
+          <div class="row"><span>Prima (8.33%)</span><span class="amt" id="ePrima">—</span></div>
+          <div class="row"><span>Vacaciones (4.17%)</span><span class="amt" id="eVac">—</span></div>
+          <div class="row row-total"><span>Costo total mensual</span><span class="amt" id="eTotal">—</span></div>
+          <p class="employer-note">Estimado. Algunos aportes (SENA, ICBF y salud patronal) pueden estar exonerados para salarios menores a 10 SMMLV.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- TURNOS Y HORAS EXTRA -->
+    <section class="panel turnos-panel" id="turnosPanel" aria-label="Horas extra y recargos por turnos">
+      <h2 class="turnos-title">Turnos y horas extra</h2>
+      <p class="turnos-intro">
+        Define tus turnos una sola vez, elige cuál turno vas a marcar y toca (o arrastra) los días del
+        calendario que lo tuvieron — sin llenar horas día por día. La app identifica automáticamente
+        los domingos y festivos, y calcula tus recargos nocturnos, dominicales/festivos y horas extra
+        con las tarifas vigentes de 2026.
+      </p>
+
+      <!-- Plantillas de turno -->
+      <div class="turnos-plantillas">
+        <div class="turnos-plantillas-head">
+          <h3>1. Mis turnos</h3>
+          <button type="button" class="btn-secundario" id="btnAgregarPlantilla">+ Agregar turno</button>
+        </div>
+        <div class="plantillas-lista" id="plantillasLista"></div>
+        <label class="field-inline jornada-field">
+          <span class="field-label">Horas ordinarias por turno (antes de contar como extra)</span>
+          <input type="number" id="jornadaOrdinaria" value="8" min="1" max="12" step="0.5" />
+        </label>
+
+        <label class="toggle toggle-turnos" for="sinDescanso">
+          <input type="checkbox" id="sinDescanso" />
+          <span class="toggle-track"><span class="toggle-dot"></span></span>
+          <span class="toggle-text">
+            No me dan descanso compensatorio por trabajar domingo/festivo
+            <small>Si tu empleador no te da un día libre a cambio, el domingo/festivo se paga completo (100% de la hora + el recargo), no solo el recargo.</small>
+          </span>
+        </label>
+      </div>
+
+      <!-- Selector de turno activo (pincel) -->
+      <div class="pincel-wrap">
+        <div class="pincel-wrap-head">
+          <p class="pincel-label">2. Elige qué turno vas a marcar, luego toca los días en el calendario</p>
+          <button type="button" class="btn-secundario btn-limpiar" id="btnLimpiarMes">Limpiar mes</button>
+        </div>
+        <div class="pincel-turnos" id="pincelTurnos"></div>
+      </div>
+
+      <!-- Calendario -->
+      <div class="calendario-header">
+        <button type="button" class="btn-nav" id="mesAnterior" aria-label="Mes anterior">‹</button>
+        <h3 id="mesLabel">Julio 2026</h3>
+        <button type="button" class="btn-nav" id="mesSiguiente" aria-label="Mes siguiente">›</button>
+      </div>
+
+      <div class="calendario-dow">
+        <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+      </div>
+      <div class="calendario-grid" id="calendarioGrid"></div>
+
+      <!-- Editor rápido para un día personalizado (fuera de las plantillas) -->
+      <div class="dia-editor" id="diaEditor" hidden>
+        <p class="dia-editor-fecha" id="diaEditorFecha"></p>
+        <div class="dia-editor-campos">
+          <label>Inicio <input type="time" id="diaEditorInicio" /></label>
+          <label>Fin <input type="time" id="diaEditorFin" /></label>
+          <label>Almuerzo (min) <input type="number" id="diaEditorAlmuerzo" min="0" max="180" step="5" /></label>
+        </div>
+        <div class="dia-editor-acciones">
+          <button type="button" class="btn-secundario" id="diaEditorCancelar">Cancelar</button>
+          <button type="button" class="btn-aplicar" id="diaEditorGuardar">Guardar día</button>
+        </div>
+      </div>
+
+      <div class="calendario-leyenda">
+        <span><i class="chip chip-domingo"></i> Domingo</span>
+        <span><i class="chip chip-festivo"></i> Festivo</span>
+      </div>
+
+      <!-- Resumen del mes -->
+      <div class="turnos-resumen" id="turnosResumen">
+        <div class="resumen-cards">
+          <div class="resumen-card">
+            <span class="resumen-num" id="resHoras">0</span>
+            <span class="resumen-label">Horas trabajadas</span>
+          </div>
+          <div class="resumen-card">
+            <span class="resumen-num" id="resExtra">0</span>
+            <span class="resumen-label">Horas extra</span>
+          </div>
+          <div class="resumen-card">
+            <span class="resumen-num" id="resDomingos">0</span>
+            <span class="resumen-label">Domingos trabajados</span>
+          </div>
+          <div class="resumen-card">
+            <span class="resumen-num" id="resFestivos">0</span>
+            <span class="resumen-label">Festivos trabajados</span>
+          </div>
+        </div>
+
+        <p class="dias-especiales-nota" id="diasEspeciales" hidden></p>
+
+        <div id="turnosAdvertencias"></div>
+
+        <table class="tabla-categorias" id="tablaCategorias">
+          <thead>
+            <tr><th>Concepto</th><th>Horas</th><th>Valor</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="turnos-total">
+          <span>Total recargos y horas extra del mes</span>
+          <span class="turnos-total-valor" id="turnosTotalValor">$0</span>
+        </div>
+
+        <button type="button" class="btn-aplicar" id="btnAplicarNomina">
+          Agregar este valor a mi nómina
+        </button>
+        <p class="turnos-nota" id="turnosNotaAplicado" hidden></p>
+
+        <button type="button" class="btn-secundario btn-guardar-mes" id="btnGuardarMes">
+          Guardar el salario y los recargos de este mes para la prima
+        </button>
+        <p class="turnos-nota" id="turnosNotaGuardado" hidden></p>
+
+        <p class="turnos-disclaimer">
+          Este cálculo asume que, si trabajas domingo o festivo, tu empleador te da un descanso
+          compensatorio en la semana (el escenario más común en turnos rotativos). Si no te dan ese
+          descanso, la ley puede darte derecho a un pago adicional (Art. 180 CST) que este estimado
+          no incluye — coméntalo con tu empleador o un asesor laboral. Límite legal: máximo 2 horas
+          extra por turno. Si tu empresa paga los recargos con un mes de rezago (por ejemplo, lo de
+          diciembre aparece en el pago de enero), recuerda que el total de este mes corresponde a la
+          nómina del <strong>mes siguiente</strong>, no a la de este mismo mes.
+        </p>
+      </div>
+    </section>
+
+    <!-- PRIMA DE SERVICIOS -->
+    <section class="panel prima-panel" id="primaPanel" aria-label="Prima de servicios">
+      <h2 class="prima-title">Prima de servicios</h2>
+      <p class="prima-intro">
+        Calcula la prima del semestre con lo que ganaste mes a mes: (salario + recargos + auxilio de
+        transporte) × días trabajados ÷ 360, por cada mes. En el panel de Turnos, calcula un mes y usa
+        "Guardar el salario y los recargos de este mes para la prima" — luego aquí usa "Traer meses
+        guardados" para completar la tabla automáticamente.
+      </p>
+
+      <div class="prima-controles">
+        <label class="field-inline">
+          <span class="field-label">Semestre</span>
+          <select id="primaSemestre">
+            <option value="1">Enero – Junio</option>
+            <option value="2">Julio – Diciembre</option>
+          </select>
+        </label>
+        <label class="field-inline">
+          <span class="field-label">Año</span>
+          <input type="number" id="primaAnio" min="2020" max="2100" step="1" />
+        </label>
+        <button type="button" class="btn-secundario" id="btnPrimaAutocompletar">Traer meses guardados</button>
+      </div>
+
+      <label class="toggle toggle-prima" for="primaRezago">
+        <input type="checkbox" id="primaRezago" checked />
+        <span class="toggle-track"><span class="toggle-dot"></span></span>
+        <span class="toggle-text">
+          Mis recargos se pagan al mes siguiente de trabajarlos
+          <small>Ej.: los recargos de diciembre aparecen en el pago de enero. Con esto activo, "Traer meses guardados" busca, para cada fila, lo que guardaste del mes calendario anterior.</small>
+        </span>
+      </label>
+
+      <div class="prima-tabla-wrap">
+        <table class="tabla-prima" id="tablaPrima">
+          <thead>
+            <tr>
+              <th>Mes</th>
+              <th>Salario</th>
+              <th>Recargos</th>
+              <th>Auxilio</th>
+              <th>Días trabajados</th>
+            </tr>
+          </thead>
+          <tbody id="primaMeses"></tbody>
+        </table>
+      </div>
+
+      <button type="button" class="btn-aplicar" id="btnCalcularPrima">Calcular prima</button>
+
+      <div class="prima-resultado" id="primaResultado" hidden>
+        <div class="turnos-total">
+          <span>Prima de servicios del semestre</span>
+          <span class="turnos-total-valor" id="primaTotalValor">$0</span>
+        </div>
+        <table class="tabla-categorias" id="tablaPrimaDetalle">
+          <thead>
+            <tr><th>Mes</th><th>Base</th><th>Días</th><th>Valor</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <p class="prima-disclaimer">
+        Estimado según el Art. 306 del CST (Ley 1788 de 2016). No incluye otros factores salariales
+        que a veces entran en la base (comisiones, bonificaciones habituales, etc.) si los tienes,
+        súmalos manualmente al salario de cada mes.
+      </p>
+    </section>
+
+    <footer class="foot">
+      <p>Cálculo estimado con valores oficiales de Colombia 2026. No reemplaza tu desprendible oficial ni una asesoría contable. La retención en la fuente real depende de deducciones personales (dependientes, medicina prepagada, intereses de vivienda, aportes voluntarios).</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

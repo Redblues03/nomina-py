@@ -1,0 +1,8 @@
+services:
+  nomina:
+    build: .
+    image: mi-nomina:2026
+    container_name: mi-nomina
+    ports:
+      - "9090:8080"     # abre en http://localhost:9090
+    restart: unless-stopped
