@@ -301,6 +301,7 @@ const LS_PLANTILLAS = "mi-nomina:plantillas";
 const LS_TURNOS = "mi-nomina:turnos"; // { "YYYY-MM": { "YYYY-MM-DD": {...} } }
 const LS_JORNADA = "mi-nomina:jornada";
 const LS_SIN_DESCANSO = "mi-nomina:sinDescanso";
+const LS_RECARGOS_JULIO = "mi-nomina:recargosJulio";
 const LS_PRIMA_REZAGO = "mi-nomina:primaRezago";
 const LS_HISTORIAL = "mi-nomina:historial"; // { "YYYY-MM": { salario, recargos } }
 
@@ -722,6 +723,7 @@ async function calcularTurnosMesInmediato() {
         jornada_ordinaria: jornada,
         turnos: lista,
         sin_descanso_compensatorio: $("sinDescanso").checked,
+        forzar_tarifa_julio: $("recargosJulio").checked,
       }),
     });
     const data = await resp.json();
@@ -952,6 +954,11 @@ $("jornadaOrdinaria").addEventListener("change", () => {
 $("sinDescanso").checked = localStorage.getItem(LS_SIN_DESCANSO) === "1";
 $("sinDescanso").addEventListener("change", () => {
   localStorage.setItem(LS_SIN_DESCANSO, $("sinDescanso").checked ? "1" : "0");
+  calcularTurnosMes();
+});
+$("recargosJulio").checked = localStorage.getItem(LS_RECARGOS_JULIO) === "1";
+$("recargosJulio").addEventListener("change", () => {
+  localStorage.setItem(LS_RECARGOS_JULIO, $("recargosJulio").checked ? "1" : "0");
   calcularTurnosMes();
 });
 renderCalendario();
