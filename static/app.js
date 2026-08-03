@@ -144,6 +144,29 @@ function actualizarDebounced() {
 
 actualizar();
 
+/* ==========================================================
+   Modo claro / oscuro
+   ========================================================== */
+const LS_TEMA = "mi-nomina:tema";
+const btnTema = $("btnTema");
+const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+
+function aplicarEstadoBotonTema() {
+  const esOscuro = document.documentElement.dataset.theme === "dark";
+  btnTema.setAttribute("aria-pressed", String(esOscuro));
+  btnTema.setAttribute("aria-label", esOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
+  if (metaThemeColor) metaThemeColor.setAttribute("content", esOscuro ? "#0b1a20" : "#16323d");
+}
+aplicarEstadoBotonTema();
+
+btnTema.addEventListener("click", () => {
+  const actual = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  const nuevo = actual === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = nuevo;
+  localStorage.setItem(LS_TEMA, nuevo);
+  aplicarEstadoBotonTema();
+});
+
 /* Service worker para instalación como app y carga rápida del shell */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
