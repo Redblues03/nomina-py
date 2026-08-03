@@ -318,10 +318,15 @@ body {
 .employer { margin-top: 24px; padding-top: 4px; border-top: 1px solid var(--line); }
 .employer-note { margin: 10px 0 0; font-size: 12px; color: var(--ink-soft); }
 
-/* ---------- Descargar imagen ---------- */
-.btn-descargar {
-  width: 100%;
+/* ---------- Descargar imagen / PDF ---------- */
+.fila-descargas {
+  display: flex;
+  gap: 8px;
   margin-top: 4px;
+}
+.btn-descargar {
+  flex: 1;
+  width: 100%;
   padding: 12px;
   font-size: 13px;
 }
