@@ -1,11 +1,8 @@
 """Servidor web de Mi Nómina (Flask)."""
 
-from datetime import date
-
-from flask import Flask, Response, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 
 import nomina
-import pdf_nomina
 import turnos
 
 app = Flask(__name__, static_folder="static", static_url_path="")
@@ -16,8 +13,9 @@ def index():
     return send_from_directory("static", "index.html")
 
 
-def _leer_datos_nomina(data):
-    """Parsea del JSON de entrada los campos que usan /api/calcular y /api/nomina/pdf."""
+@app.route("/api/calcular", methods=["POST"])
+def api_calcular():
+    data = request.get_json(silent=True) or {}
     try:
         salario = int(float(data.get("salario", 0) or 0))
     except (TypeError, ValueError):
@@ -31,36 +29,15 @@ def _leer_datos_nomina(data):
     except (TypeError, ValueError):
         pago_extra = 0
 
-    return {
-        "salario": salario,
-        "auxilio": bool(data.get("auxilio", True)),
-        "retencion": bool(data.get("retencion", False)),
-        "arl": float(data.get("arl", 0.00522)),
-        "recargos": recargos,
-        "pago_extra": pago_extra,
-    }
-
-
-@app.route("/api/calcular", methods=["POST"])
-def api_calcular():
-    data = request.get_json(silent=True) or {}
-    resultado = nomina.calcular(**_leer_datos_nomina(data))
-    return jsonify(resultado)
-
-
-@app.route("/api/nomina/pdf", methods=["POST"])
-def api_nomina_pdf():
-    data = request.get_json(silent=True) or {}
-    datos = _leer_datos_nomina(data)
-    resultado = nomina.calcular(**datos)
-    pdf_bytes = pdf_nomina.generar_pdf(resultado, retencion_aplicada=datos["retencion"])
-
-    nombre_archivo = f"mi-nomina-{date.today().isoformat()}.pdf"
-    return Response(
-        pdf_bytes,
-        mimetype="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename={nombre_archivo}"},
+    resultado = nomina.calcular(
+        salario=salario,
+        auxilio=bool(data.get("auxilio", True)),
+        retencion=bool(data.get("retencion", False)),
+        arl=float(data.get("arl", 0.00522)),
+        recargos=recargos,
+        pago_extra=pago_extra,
     )
+    return jsonify(resultado)
 
 
 @app.route("/api/turnos/calcular", methods=["POST"])

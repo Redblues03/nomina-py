@@ -254,47 +254,6 @@ function descargarImagenNomina() {
 $("btnDescargarImagen").addEventListener("click", descargarImagenNomina);
 
 /* ==========================================================
-   Descargar el desprendible como PDF (lo arma el backend)
-   ========================================================== */
-async function descargarPdfNomina() {
-  const boton = $("btnDescargarPdf");
-  const textoOriginal = boton.textContent;
-  boton.disabled = true;
-  boton.textContent = "Generando…";
-  try {
-    const resp = await fetch("api/nomina/pdf", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        salario: leerSalario(),
-        auxilio: el.auxilio.checked,
-        retencion: el.retencion.checked,
-        arl: parseFloat(el.arl.value),
-        recargos: recargosAplicados,
-        pago_extra: leerMonto(el.pagoExtra),
-      }),
-    });
-    if (!resp.ok) throw new Error("No se pudo generar el PDF");
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `mi-nomina-${new Date().toISOString().slice(0, 10)}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  } catch (e) {
-    alert("No se pudo generar el PDF. Intenta de nuevo.");
-  } finally {
-    boton.disabled = false;
-    boton.textContent = textoOriginal;
-  }
-}
-
-$("btnDescargarPdf").addEventListener("click", descargarPdfNomina);
-
-/* ==========================================================
    Turnos y calendario
    ========================================================== */
 const LS_PLANTILLAS = "mi-nomina:plantillas";
