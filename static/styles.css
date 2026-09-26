@@ -535,12 +535,32 @@ body {
 .plantillas-lista { display: flex; flex-direction: column; gap: 8px; }
 .plantilla-row {
   display: grid;
-  grid-template-columns: 36px 1fr 90px 90px 80px 32px;
+  grid-template-columns: 36px 1fr 90px 90px 100px 32px;
   gap: 8px;
   align-items: center;
 }
+.plantilla-encabezado {
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.plantilla-almuerzo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.plantilla-almuerzo input { min-width: 0; }
+.plantilla-almuerzo-movil { display: none; }
+.plantillas-nota { margin: 10px 0 4px; }
 @media (max-width: 640px) {
   .plantilla-row { grid-template-columns: 36px 1fr 1fr; grid-template-areas: "color nombre nombre" "inicio fin almuerzo" "borrar borrar borrar"; }
+  .plantilla-encabezado { display: none; }
+  .plantilla-almuerzo-movil { display: inline; }
 }
 .plantilla-row input {
   border: 1px solid var(--line);

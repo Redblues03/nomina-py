@@ -415,10 +415,13 @@ function renderPlantillas() {
     row.className = "plantilla-row";
     row.innerHTML = `
       <input type="color" data-campo="color" value="${p.color || COLOR_PERSONALIZADO}" title="Color del turno" />
-      <input type="text" data-campo="nombre" value="${p.nombre}" placeholder="Nombre del turno" />
-      <input type="time" data-campo="inicio" value="${p.inicio}" />
-      <input type="time" data-campo="fin" value="${p.fin}" />
-      <input type="number" data-campo="almuerzo" value="${p.almuerzo}" min="0" max="180" step="5" title="Minutos de almuerzo" />
+      <input type="text" data-campo="nombre" value="${p.nombre}" placeholder="Nombre del turno" aria-label="Nombre del turno" />
+      <input type="time" data-campo="inicio" value="${p.inicio}" aria-label="Hora de entrada" />
+      <input type="time" data-campo="fin" value="${p.fin}" aria-label="Hora de salida" />
+      <label class="plantilla-almuerzo" title="Minutos de almuerzo (no se pagan, se descuentan del turno)">
+        <input type="number" data-campo="almuerzo" value="${p.almuerzo}" min="0" max="180" step="5" aria-label="Minutos de almuerzo" />
+        <span>min<span class="plantilla-almuerzo-movil"> almuerzo</span></span>
+      </label>
       <button type="button" class="plantilla-borrar" title="Eliminar turno" data-idx="${idx}">×</button>
     `;
     row.querySelectorAll("input").forEach((input) => {
