@@ -56,21 +56,13 @@
             <span class="prefix">$</span>
             <input
               id="salario"
+              value="5.500.646"
               inputmode="numeric"
               autocomplete="off"
               placeholder="0"
               aria-label="Salario mensual en pesos" />
           </div>
           <span class="field-hint" id="salarioHint">Salario básico, sin auxilio de transporte.</span>
-        </label>
-
-        <label class="toggle" for="auxilio">
-          <input type="checkbox" id="auxilio" checked />
-          <span class="toggle-track"><span class="toggle-dot"></span></span>
-          <span class="toggle-text">
-            Recibo auxilio de transporte
-            <small id="auxilioNota">Aplica hasta 2 salarios mínimos.</small>
-          </span>
         </label>
 
         <label class="field">
@@ -87,9 +79,18 @@
           <span class="field-hint">Ej. compensación de seguro. No constitutivo de salario: se suma a tu neto, pero no se le descuenta salud ni pensión.</span>
         </label>
 
-        <details class="advanced">
-          <summary>Opciones avanzadas</summary>
+        <div class="advanced">
+          <p class="advanced-title">Opciones avanzadas</p>
           <div class="advanced-body">
+            <label class="toggle" for="auxilio">
+              <input type="checkbox" id="auxilio" checked />
+              <span class="toggle-track"><span class="toggle-dot"></span></span>
+              <span class="toggle-text">
+                Recibo auxilio de transporte
+                <small id="auxilioNota">Aplica hasta 2 salarios mínimos.</small>
+              </span>
+            </label>
+
             <label class="toggle" for="retencion">
               <input type="checkbox" id="retencion" />
               <span class="toggle-track"><span class="toggle-dot"></span></span>
@@ -119,7 +120,7 @@
               </select>
             </label>
           </div>
-        </details>
+        </div>
 
         <dl class="refs">
           <div><dt>Salario mínimo 2026</dt><dd>$1.750.905</dd></div>
@@ -218,14 +219,6 @@
           </span>
         </label>
 
-        <label class="toggle toggle-turnos" for="recargosJulio">
-          <input type="checkbox" id="recargosJulio" />
-          <span class="toggle-track"><span class="toggle-dot"></span></span>
-          <span class="toggle-text">
-            Simular con los recargos de julio 2026 (90%)
-            <small>Calcula este mes como si ya aplicara el recargo dominical/festivo de julio (90%) en vez del vigente en la fecha real de cada turno. Solo para comparar — no cambia el divisor de horas mensual.</small>
-          </span>
-        </label>
       </div>
 
       <!-- Selector de turno activo (pincel) -->

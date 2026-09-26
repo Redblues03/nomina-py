@@ -324,13 +324,12 @@ const LS_PLANTILLAS = "mi-nomina:plantillas";
 const LS_TURNOS = "mi-nomina:turnos"; // { "YYYY-MM": { "YYYY-MM-DD": {...} } }
 const LS_JORNADA = "mi-nomina:jornada";
 const LS_SIN_DESCANSO = "mi-nomina:sinDescanso";
-const LS_RECARGOS_JULIO = "mi-nomina:recargosJulio";
 const LS_PRIMA_REZAGO = "mi-nomina:primaRezago";
 const LS_HISTORIAL = "mi-nomina:historial"; // { "YYYY-MM": { salario, recargos } }
 
 const PLANTILLAS_DEFECTO = [
-  { id: "manana", nombre: "Mañana", inicio: "06:00", fin: "15:00", almuerzo: 60, color: "#f2c14e" },
-  { id: "tarde", nombre: "Tarde", inicio: "14:00", fin: "23:00", almuerzo: 60, color: "#4e9de0" },
+  { id: "manana", nombre: "Mañana", inicio: "06:30", fin: "15:30", almuerzo: 60, color: "#f2c14e" },
+  { id: "tarde", nombre: "Tarde", inicio: "13:30", fin: "22:30", almuerzo: 60, color: "#4e9de0" },
   { id: "noche", nombre: "Noche", inicio: "22:00", fin: "07:00", almuerzo: 60, color: "#5a4ea0" },
 ];
 const PALETA_COLORES = ["#f2c14e", "#4e9de0", "#5a4ea0", "#e0704e", "#4ea082", "#c14e8a"];
@@ -746,7 +745,6 @@ async function calcularTurnosMesInmediato() {
         jornada_ordinaria: jornada,
         turnos: lista,
         sin_descanso_compensatorio: $("sinDescanso").checked,
-        forzar_tarifa_julio: $("recargosJulio").checked,
       }),
     });
     const data = await resp.json();
@@ -977,11 +975,6 @@ $("jornadaOrdinaria").addEventListener("change", () => {
 $("sinDescanso").checked = localStorage.getItem(LS_SIN_DESCANSO) === "1";
 $("sinDescanso").addEventListener("change", () => {
   localStorage.setItem(LS_SIN_DESCANSO, $("sinDescanso").checked ? "1" : "0");
-  calcularTurnosMes();
-});
-$("recargosJulio").checked = localStorage.getItem(LS_RECARGOS_JULIO) === "1";
-$("recargosJulio").addEventListener("change", () => {
-  localStorage.setItem(LS_RECARGOS_JULIO, $("recargosJulio").checked ? "1" : "0");
   calcularTurnosMes();
 });
 renderCalendario();
