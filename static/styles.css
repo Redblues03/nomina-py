@@ -294,19 +294,15 @@ body {
   padding-top: 10px;
   transition: border-color .3s var(--ease);
 }
-.advanced summary {
-  cursor: pointer;
+.advanced-title {
+  margin: 0;
   font-size: 13px;
   font-weight: 600;
   color: var(--gold);
   letter-spacing: .02em;
-  list-style: none;
   padding: 6px 0;
   transition: color .3s var(--ease);
 }
-.advanced summary::-webkit-details-marker { display: none; }
-.advanced summary::before { content: "+ "; font-family: var(--mono); }
-.advanced[open] summary::before { content: "– "; }
 .advanced-body { padding-top: 4px; }
 .field-inline { display: flex; flex-direction: column; margin: 12px 0 4px; }
 .field-inline select {
